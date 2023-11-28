@@ -35,8 +35,7 @@ func (s Service) CreateWallet(encryptionKey []byte) (Wallet, error) {
 	}
 
 	address := crypto.PubkeyToAddress(*publicKeyECDSA).Hex()
-	privateKeyBytes := crypto.FromECDSA(privateKey)
-	privateKeyAES, err := encryption.Encrypt(privateKeyBytes, encryptionKey)
+	privateKeyAES, err := encryption.Encrypt(crypto.FromECDSA(privateKey), encryptionKey)
 	if err != nil {
 		return Wallet{}, fmt.Errorf("failed to encrypt wallet private key: %w", err)
 	}
