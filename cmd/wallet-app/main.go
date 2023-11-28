@@ -31,11 +31,10 @@ func main() {
 		return
 	}
 
-	// Пытаемся разблокировать кошелек
-	fmt.Println("Enter password to unlock the wallet:")
+	fmt.Println("Enter hashed password to unlock the wallet:")
 	reader := bufio.NewReader(os.Stdin)
 	psswd, _ := reader.ReadString('\n')
-	if walletService.UnlockWallet(psswd) {
+	if walletService.UnlockWallet(psswd[:len(psswd)-1]) {
 		fmt.Println("Wallet unlocked!")
 	} else {
 		fmt.Println("Incorrect password. Please, try again.")
