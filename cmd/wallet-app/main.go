@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	passwordsStorageFile = "data/wallet.txt"
+	passwordsStorageFile = "data/passwords.hash"
 	encryptionKey        = "M73aVlB63JArFuA4p4anyw=="
 )
 
