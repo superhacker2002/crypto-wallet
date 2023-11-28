@@ -5,8 +5,8 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-func hashPassword(password string) string {
+func hashPassword(password []byte) []byte {
 	hasher := sha3.New256()
-	hasher.Write([]byte(password))
-	return hex.EncodeToString(hasher.Sum(nil))
+	hasher.Write(password)
+	return []byte(hex.EncodeToString(hasher.Sum(nil)))
 }

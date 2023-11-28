@@ -35,12 +35,14 @@ func (s Service) CreateWallet(encryptionKey []byte) (Wallet, error) {
 	}
 
 	address := crypto.PubkeyToAddress(*publicKeyECDSA).Hex()
-	privateKeyAES, err := encryption.Encrypt(crypto.FromECDSA(privateKey), encryptionKey)
+	privateKeyBytes := crypto.FromECDSA(privateKey)
+	privateKeyAES, err := encryption.Encrypt(privateKeyBytes, encryptionKey)
 	if err != nil {
 		return Wallet{}, fmt.Errorf("failed to encrypt wallet private key: %w", err)
 	}
 
-	err = s.r.SavePassword(privateKeyAES)
+	hashedPrivateKey := hashPassword(privateKeyAES)
+	err = s.r.SavePassword(hashedPrivateKey)
 	if err != nil {
 		return Wallet{}, err
 	}
@@ -48,19 +50,12 @@ func (s Service) CreateWallet(encryptionKey []byte) (Wallet, error) {
 	return New(address), nil
 }
 
-func (s Service) UnlockWallet(password string, decryptionKey []byte) bool {
-	hashedPassword := hashPassword(password)
-
-	encryptedData, err := s.r.Passwords()
+func (s Service) UnlockWallet(userPasswd string) bool {
+	passwords, err := s.r.Passwords()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	decryptedData, err := encryption.Decrypt(encryptedData, decryptionKey)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	hashedPasswordFromData := string(decryptedData)
-	return hashedPassword == hashedPasswordFromData
+	hashedPassword := string(passwords)
+	return hashedPassword == userPasswd
 }
